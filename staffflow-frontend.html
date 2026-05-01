@@ -1,1 +1,1060 @@
-https://staffwork-flow-frontend-rd5p.vercel.app
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StaffFlow — Work Management</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f5;
+  --sidebar: #0f1923;
+  --card: #ffffff;
+  --accent: #2563eb;
+  --accent2: #16a34a;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --text: #0f1923;
+  --text2: #6b7280;
+  --border: #e5e7eb;
+  --radius: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+.hidden { display: none !important; }
+
+/* LOGIN */
+#loginPage { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f1923 0%, #1e3a5f 100%); }
+.login-box { background: white; border-radius: 16px; padding: 40px; width: 380px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.login-logo { font-size: 26px; font-weight: 600; color: #0f1923; margin-bottom: 4px; }
+.login-logo span { color: var(--accent); }
+.login-sub { color: var(--text2); font-size: 13px; margin-bottom: 28px; }
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 5px; }
+.form-control { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; transition: border 0.15s; }
+.form-control:focus { border-color: var(--accent); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; font-family: inherit; transition: all 0.15s; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-secondary { background: #f3f4f6; color: var(--text); }
+.btn-secondary:hover { background: #e5e7eb; }
+.btn-danger { background: #fee2e2; color: var(--danger); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-full { width: 100%; padding: 11px; }
+.error-msg { color: var(--danger); font-size: 12px; margin-top: 6px; }
+.link-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 13px; font-family: inherit; }
+
+/* APP LAYOUT */
+#app { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; background: var(--sidebar); color: white; display: flex; flex-direction: column; flex-shrink: 0; position: fixed; height: 100vh; z-index: 100; }
+.sidebar-logo { padding: 22px 20px 18px; font-size: 20px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.sidebar-logo span { color: #60a5fa; }
+.sidebar-nav { flex: 1; padding: 10px 0; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13.5px; cursor: pointer; border: none; background: none; width: 100%; text-align: left; transition: all 0.15s; border-radius: 0; }
+.nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.nav-item.active { background: rgba(37,99,235,0.25); color: #93c5fd; font-weight: 500; }
+.sidebar-footer { padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.08); }
+.user-name { font-weight: 500; font-size: 13px; color: white; display: block; }
+.user-role { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 10px; display: block; }
+.logout-btn { background: none; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; width: 100%; font-family: inherit; }
+.main { margin-left: 220px; flex: 1; overflow-y: auto; }
+.page { padding: 28px 32px; display: none; }
+.page.active { display: block; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
+.page-title { font-size: 22px; font-weight: 600; }
+
+/* CARDS */
+.card { background: var(--card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 16px; }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; }
+
+/* METRICS */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 12px; margin-bottom: 20px; }
+.metric-card { background: white; border-radius: var(--radius); padding: 16px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.metric-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.metric-value { font-size: 26px; font-weight: 700; color: var(--text); }
+.metric-sub { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+
+/* BADGES */
+.badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-todo { background: #f3f4f6; color: #374151; }
+.badge-in_progress { background: #dbeafe; color: #1d4ed8; }
+.badge-done { background: #dcfce7; color: #15803d; }
+.badge-review { background: #fef3c7; color: #92400e; }
+.badge-high { background: #fee2e2; color: #b91c1c; }
+.badge-medium { background: #fef3c7; color: #92400e; }
+.badge-low { background: #dcfce7; color: #166534; }
+.badge-admin { background: #fee2e2; color: #b91c1c; }
+.badge-manager { background: #fef3c7; color: #92400e; }
+.badge-staff { background: #dcfce7; color: #15803d; }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 12px; border-bottom: 1.5px solid var(--border); white-space: nowrap; }
+td { padding: 11px 12px; border-bottom: 1px solid #f9fafb; font-size: 13px; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f9fafb; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+.modal { background: white; border-radius: 14px; padding: 28px; width: 480px; max-width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-size: 17px; font-weight: 600; }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text2); line-height: 1; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+select.form-control { cursor: pointer; }
+textarea.form-control { resize: vertical; }
+
+/* PROGRESS */
+.progress-wrap { height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.progress-bar { height: 100%; border-radius: 3px; transition: width 0.4s; }
+
+/* KRA */
+.kra-card { background: white; border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 14px; }
+
+/* FILTERS */
+.filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+
+/* ALERTS */
+.alert { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+.alert-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
+.alert-success { background: #dcfce7; color: #15803d; border-left: 4px solid #22c55e; }
+
+/* FORGOT PASSWORD SCREENS */
+.otp-input { font-size: 28px; letter-spacing: 12px; text-align: center; font-family: 'DM Mono', monospace; }
+
+/* CHARTS */
+.chart-container { position: relative; height: 220px; }
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .nav-item span { display: none; }
+  .sidebar-logo { padding: 16px 10px; font-size: 0; }
+  .sidebar-logo span { font-size: 20px; }
+  .sidebar-footer { padding: 10px; }
+  .user-name, .user-role, .logout-btn { display: none; }
+  .main { margin-left: 60px; }
+  .page { padding: 16px; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+.loading { text-align: center; padding: 40px; color: var(--text2); }
+.empty { text-align: center; padding: 40px; color: #9ca3af; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+  <div class="login-box">
+    <div id="screenLogin">
+      <div class="login-logo">Staff<span>Flow</span></div>
+      <div class="login-sub">Sign in to your workspace</div>
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input class="form-control" type="email" id="loginEmail" placeholder="you@company.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-control" type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div id="loginError" class="error-msg hidden"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:16px" onclick="doLogin()" id="loginBtn">Sign in</button>
+      <div style="text-align:center;margin-top:14px">
+        <button class="link-btn" onclick="showScreen('screenForgot1')">Forgot password?</button>
+      </div>
+    </div>
+
+    <div id="screenForgot1" class="hidden">
+      <div class="login-logo">Staff<span>Flow</span></div>
+      <div class="login-sub">Reset your password</div>
+      <div class="form-group">
+        <label class="form-label">How do you want to receive OTP?</label>
+        <div style="display:flex;gap:10px;margin-bottom:12px">
+          <button class="btn btn-primary" style="flex:1" id="btnWA" onclick="selectMethod('whatsapp')">📱 WhatsApp</button>
+          <button class="btn btn-secondary" style="flex:1" id="btnEM" onclick="selectMethod('email')">📧 Email</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="contactLabel">Mobile number (10 digits)</label>
+        <input class="form-control" id="forgotContact" placeholder="98765 43210">
+      </div>
+      <div id="forgotError1" class="error-msg hidden"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="sendOTP()" id="sendOTPBtn">Send OTP</button>
+      <button class="btn btn-secondary btn-full" style="margin-top:8px" onclick="showScreen('screenLogin')">Back to login</button>
+    </div>
+
+    <div id="screenForgot2" class="hidden">
+      <div class="login-logo">Staff<span>Flow</span></div>
+      <div class="login-sub" id="otpSentMsg">OTP sent successfully</div>
+      <div class="form-group">
+        <label class="form-label">Enter 6-digit OTP</label>
+        <input class="form-control otp-input" id="otpInput" maxlength="6" placeholder="------">
+      </div>
+      <div id="forgotError2" class="error-msg hidden"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="verifyOTP()">Verify OTP</button>
+      <button class="btn btn-secondary btn-full" style="margin-top:8px" onclick="showScreen('screenForgot1')">Resend OTP</button>
+    </div>
+
+    <div id="screenForgot3" class="hidden">
+      <div class="login-logo">Staff<span>Flow</span></div>
+      <div class="login-sub">Set your new password</div>
+      <div class="form-group">
+        <label class="form-label">New password</label>
+        <input class="form-control" type="password" id="newPass1" placeholder="Min. 6 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm new password</label>
+        <input class="form-control" type="password" id="newPass2" placeholder="Type again">
+      </div>
+      <div id="forgotError3" class="error-msg hidden"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="resetPassword()">Save new password</button>
+    </div>
+
+    <div id="screenForceChange" class="hidden">
+      <div class="alert alert-warning" style="margin-bottom:16px">👋 Welcome! Please set your own password to continue.</div>
+      <div class="form-group">
+        <label class="form-label">Temporary password (given by admin)</label>
+        <input class="form-control" type="password" id="forceOld" placeholder="Enter temp password">
+      </div>
+      <div class="form-group">
+        <label class="form-label">New password</label>
+        <input class="form-control" type="password" id="forceNew1" placeholder="Min. 6 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm new password</label>
+        <input class="form-control" type="password" id="forceNew2" placeholder="Type again">
+      </div>
+      <div id="forceError" class="error-msg hidden"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="forceChangePassword()">Save & continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" class="hidden">
+  <aside class="sidebar">
+    <div class="sidebar-logo">Staff<span>Flow</span></div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">📊 <span>Dashboard</span></button>
+      <button class="nav-item" onclick="showPage('tasks')" id="nav-tasks">✅ <span>Tasks</span></button>
+      <button class="nav-item" onclick="showPage('kra')" id="nav-kra">🎯 <span>KRA / KPI</span></button>
+      <button class="nav-item" onclick="showPage('reports')" id="nav-reports">📈 <span>Reports</span></button>
+      <button class="nav-item hidden" onclick="showPage('users')" id="nav-users">👥 <span>Team</span></button>
+      <button class="nav-item" onclick="showPage('profile')" id="nav-profile">👤 <span>My Profile</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="user-name" id="sidebarName">—</span>
+      <span class="user-role" id="sidebarRole">—</span>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <span style="font-size:13px;color:var(--text2)" id="dashDate"></span>
+      </div>
+      <div class="metric-grid" id="dashMetrics"></div>
+      <div id="overdueAlert"></div>
+      <div class="charts-grid">
+        <div class="card"><div class="card-title">Task status</div><div class="chart-container"><canvas id="statusChart"></canvas></div></div>
+        <div class="card"><div class="card-title">KPI progress by KRA</div><div class="chart-container"><canvas id="kpiChart"></canvas></div></div>
+      </div>
+      <div class="card"><div class="card-title">Recent tasks</div><div id="dashRecentTasks"></div></div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="page" id="page-tasks">
+      <div class="page-header">
+        <h1 class="page-title">Tasks</h1>
+        <button class="btn btn-primary" onclick="openTaskModal()">+ Add task</button>
+      </div>
+      <div class="filter-row" id="taskFilters"></div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Task</th><th>Assignee</th><th>Priority</th><th>Status</th><th>Due date</th><th>KRA</th><th>Actions</th></tr></thead><tbody id="taskTableBody"></tbody></table></div></div>
+    </div>
+
+    <!-- KRA/KPI -->
+    <div class="page" id="page-kra">
+      <div class="page-header">
+        <h1 class="page-title">KRA / KPI</h1>
+        <button class="btn btn-primary" onclick="openKRAModal()">+ Add KRA</button>
+      </div>
+      <div id="kraList"></div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="page" id="page-reports">
+      <div class="page-header"><h1 class="page-title">Reports</h1><span style="font-size:13px;color:var(--text2)">Live data</span></div>
+      <div class="metric-grid" id="reportMetrics"></div>
+      <div class="charts-grid">
+        <div class="card"><div class="card-title">Tasks by assignee</div><div class="chart-container"><canvas id="assigneeChart"></canvas></div></div>
+        <div class="card"><div class="card-title">KPI current vs target</div><div class="chart-container"><canvas id="kpiVsChart"></canvas></div></div>
+      </div>
+      <div id="overdueReport"></div>
+      <div class="card"><div class="card-title">Full task log</div><div class="table-wrap"><table><thead><tr><th>Task</th><th>Assignee</th><th>Status</th><th>Priority</th><th>Due</th><th>KRA</th></tr></thead><tbody id="reportTableBody"></tbody></table></div></div>
+    </div>
+
+    <!-- USERS (ADMIN) -->
+    <div class="page" id="page-users">
+      <div class="page-header">
+        <h1 class="page-title">Team members</h1>
+        <button class="btn btn-primary" onclick="openUserModal()">+ Add member</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Role</th><th>Status</th><th>Password</th><th>Actions</th></tr></thead><tbody id="userTableBody"></tbody></table></div></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page" id="page-profile">
+      <div class="page-header"><h1 class="page-title">My Profile</h1></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px">
+        <div class="card">
+          <div class="card-title">Account details</div>
+          <div style="display:flex;flex-direction:column;gap:12px" id="profileDetails"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Change password</div>
+          <div class="form-group"><label class="form-label">Current password</label><input class="form-control" type="password" id="cpOld" placeholder="Current password"></div>
+          <div class="form-group"><label class="form-label">New password</label><input class="form-control" type="password" id="cpNew1" placeholder="Min. 6 characters"></div>
+          <div class="form-group"><label class="form-label">Confirm new password</label><input class="form-control" type="password" id="cpNew2" placeholder="Type again"></div>
+          <div id="cpError" class="error-msg hidden"></div>
+          <div id="cpSuccess" class="hidden" style="color:#15803d;font-size:13px;margin-top:4px"></div>
+          <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="changePassword()">Change password</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- TASK MODAL -->
+<div class="modal-overlay hidden" id="taskModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="taskModalTitle">Add task</div>
+      <button class="modal-close" onclick="closeModal('taskModal')">×</button>
+    </div>
+    <div class="form-group"><label class="form-label">Task title *</label><input class="form-control" id="tTitle" placeholder="e.g. Redesign landing page"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Assign to *</label><select class="form-control" id="tAssignee"><option value="">Select person</option></select></div>
+      <div class="form-group"><label class="form-label">Due date *</label><input class="form-control" type="date" id="tDue"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Status</label><select class="form-control" id="tStatus"><option value="to_do">To do</option><option value="in_progress">In progress</option><option value="review">Review</option><option value="done">Done</option></select></div>
+      <div class="form-group"><label class="form-label">Priority</label><select class="form-control" id="tPriority"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Link to KRA</label><select class="form-control" id="tKRA"><option value="">No KRA</option></select></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-control" id="tDesc" rows="3" placeholder="Task details..."></textarea></div>
+    <div id="taskModalError" class="error-msg hidden"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveTask()" id="saveTaskBtn">Add task</button>
+      <button class="btn btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- KRA MODAL -->
+<div class="modal-overlay hidden" id="kraModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add KRA</div><button class="modal-close" onclick="closeModal('kraModal')">×</button></div>
+    <div class="form-group"><label class="form-label">KRA name *</label><input class="form-control" id="kraName" placeholder="e.g. Revenue Growth"></div>
+    <div class="form-group"><label class="form-label">Owner *</label><input class="form-control" id="kraOwner" placeholder="Responsible person"></div>
+    <div id="kraModalError" class="error-msg hidden"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveKRA()">Add KRA</button>
+      <button class="btn btn-secondary" onclick="closeModal('kraModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- KPI MODAL -->
+<div class="modal-overlay hidden" id="kpiModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="kpiModalTitle">Add KPI</div><button class="modal-close" onclick="closeModal('kpiModal')">×</button></div>
+    <div class="form-group"><label class="form-label">KPI name *</label><input class="form-control" id="kpiName" placeholder="e.g. Monthly revenue target"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Target value *</label><input class="form-control" type="number" id="kpiTarget" placeholder="100"></div>
+      <div class="form-group"><label class="form-label">Current value</label><input class="form-control" type="number" id="kpiCurrent" placeholder="0"></div>
+    </div>
+    <div id="kpiModalError" class="error-msg hidden"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveKPI()">Add KPI</button>
+      <button class="btn btn-secondary" onclick="closeModal('kpiModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div class="modal-overlay hidden" id="userModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="userModalTitle">Add member</div><button class="modal-close" onclick="closeModal('userModal')">×</button></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Full name *</label><input class="form-control" id="uName" placeholder="e.g. Rahul Sharma"></div>
+      <div class="form-group"><label class="form-label">Role *</label><select class="form-control" id="uRole"><option value="staff">Staff</option><option value="manager">Manager</option><option value="admin">Admin</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email *</label><input class="form-control" type="email" id="uEmail" placeholder="rahul@company.com"></div>
+    <div class="form-group"><label class="form-label">Mobile (for WhatsApp OTP)</label><input class="form-control" id="uPhone" placeholder="10-digit mobile number"></div>
+    <div class="form-group" id="uPassGroup"><label class="form-label">Temporary password *</label><input class="form-control" id="uPass" placeholder="They'll change this on first login"><div style="font-size:11px;color:var(--text2);margin-top:3px">Welcome email will be sent automatically</div></div>
+    <div id="userModalError" class="error-msg hidden"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveUser()" id="saveUserBtn">Add member</button>
+      <button class="btn btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET PASSWORD MODAL -->
+<div class="modal-overlay hidden" id="resetModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="resetModalTitle">Reset password</div><button class="modal-close" onclick="closeModal('resetModal')">×</button></div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Set a temporary password. User will be asked to change it on next login.</p>
+    <div class="form-group"><label class="form-label">New temporary password</label><input class="form-control" id="resetPass" placeholder="Min. 6 characters"></div>
+    <div id="resetError" class="error-msg hidden"></div>
+    <div id="resetSuccess" class="hidden alert alert-success" style="margin-top:8px"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doResetPassword()" id="resetBtn">Reset password</button>
+    <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="closeModal('resetModal')">Close</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ─── CONFIG ───
+const API = 'https://workflow-management-yihp.onrender.com/api';
+
+// ─── STATE ───
+let token = localStorage.getItem('sf_token');
+let currentUser = JSON.parse(localStorage.getItem('sf_user') || 'null');
+let tasks = [], kras = [], users = [];
+let editTaskId = null, editUserId = null, activeKRAId = null, resetUserId = null;
+let forgotMethod = 'email', forgotContact = '';
+let taskFilter = 'all';
+let charts = {};
+
+// ─── API HELPER ───
+async function api(method, path, body) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(API + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error');
+  return data;
+}
+
+// ─── AUTH ───
+function showScreen(id) {
+  ['screenLogin','screenForgot1','screenForgot2','screenForgot3','screenForceChange'].forEach(s => {
+    document.getElementById(s).classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  errEl.classList.add('hidden');
+  btn.textContent = 'Signing in...'; btn.disabled = true;
+  try {
+    const data = await api('POST', '/auth/login', { email, password });
+    token = data.token;
+    currentUser = data.user;
+    localStorage.setItem('sf_token', token);
+    localStorage.setItem('sf_user', JSON.stringify(currentUser));
+    if (data.must_change_password) {
+      showScreen('screenForceChange');
+    } else {
+      initApp();
+    }
+  } catch(e) {
+    errEl.textContent = e.message; errEl.classList.remove('hidden');
+  } finally { btn.textContent = 'Sign in'; btn.disabled = false; }
+}
+
+function selectMethod(m) {
+  forgotMethod = m;
+  document.getElementById('btnWA').className = m === 'whatsapp' ? 'btn btn-primary' : 'btn btn-secondary';
+  document.getElementById('btnEM').className = m === 'email' ? 'btn btn-primary' : 'btn btn-secondary';
+  document.getElementById('contactLabel').textContent = m === 'whatsapp' ? 'Mobile number (10 digits)' : 'Email address';
+  document.getElementById('forgotContact').placeholder = m === 'whatsapp' ? '98765 43210' : 'you@company.com';
+}
+
+async function sendOTP() {
+  forgotContact = document.getElementById('forgotContact').value.trim();
+  const errEl = document.getElementById('forgotError1');
+  const btn = document.getElementById('sendOTPBtn');
+  errEl.classList.add('hidden');
+  btn.textContent = 'Sending...'; btn.disabled = true;
+  try {
+    const data = await api('POST', '/auth/forgot-password', { contact: forgotContact, method: forgotMethod });
+    document.getElementById('otpSentMsg').textContent = `OTP sent to ${forgotContact} via ${forgotMethod === 'whatsapp' ? 'WhatsApp' : 'email'}`;
+    showScreen('screenForgot2');
+  } catch(e) {
+    errEl.textContent = e.message; errEl.classList.remove('hidden');
+  } finally { btn.textContent = 'Send OTP'; btn.disabled = false; }
+}
+
+function verifyOTP() {
+  const otp = document.getElementById('otpInput').value.trim();
+  if (otp.length !== 6) { document.getElementById('forgotError2').textContent = 'Please enter 6-digit OTP'; document.getElementById('forgotError2').classList.remove('hidden'); return; }
+  document.getElementById('forgotError2').classList.add('hidden');
+  showScreen('screenForgot3');
+}
+
+async function resetPassword() {
+  const otp = document.getElementById('otpInput').value.trim();
+  const p1 = document.getElementById('newPass1').value;
+  const p2 = document.getElementById('newPass2').value;
+  const errEl = document.getElementById('forgotError3');
+  errEl.classList.add('hidden');
+  if (p1.length < 6) { errEl.textContent = 'Password must be at least 6 characters'; errEl.classList.remove('hidden'); return; }
+  if (p1 !== p2) { errEl.textContent = 'Passwords do not match'; errEl.classList.remove('hidden'); return; }
+  try {
+    await api('POST', '/auth/reset-password', { contact: forgotContact, method: forgotMethod, otp, new_password: p1 });
+    alert('Password reset successfully! Please login with your new password.');
+    showScreen('screenLogin');
+  } catch(e) {
+    errEl.textContent = e.message; errEl.classList.remove('hidden');
+    showScreen('screenForgot2');
+  }
+}
+
+async function forceChangePassword() {
+  const old_password = document.getElementById('forceOld').value;
+  const p1 = document.getElementById('forceNew1').value;
+  const p2 = document.getElementById('forceNew2').value;
+  const errEl = document.getElementById('forceError');
+  errEl.classList.add('hidden');
+  if (p1.length < 6) { errEl.textContent = 'Min. 6 characters'; errEl.classList.remove('hidden'); return; }
+  if (p1 !== p2) { errEl.textContent = 'Passwords do not match'; errEl.classList.remove('hidden'); return; }
+  try {
+    await api('POST', '/auth/change-password', { old_password, new_password: p1 });
+    initApp();
+  } catch(e) { errEl.textContent = e.message; errEl.classList.remove('hidden'); }
+}
+
+function doLogout() {
+  localStorage.removeItem('sf_token');
+  localStorage.removeItem('sf_user');
+  token = null; currentUser = null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+  showScreen('screenLogin');
+}
+
+// ─── APP INIT ───
+function initApp() {
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('sidebarName').textContent = currentUser.name;
+  document.getElementById('sidebarRole').textContent = currentUser.role;
+  document.getElementById('dashDate').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  if (['admin','manager'].includes(currentUser.role)) {
+    document.getElementById('nav-users').classList.remove('hidden');
+  }
+  loadAll();
+  renderProfile();
+}
+
+async function loadAll() {
+  try {
+    [tasks, kras, users] = await Promise.all([
+      api('GET', '/tasks'),
+      api('GET', '/kras'),
+      api('GET', '/auth/users')
+    ]);
+    renderDashboard();
+    renderTasks();
+    renderKRAs();
+    renderReports();
+    renderUsers();
+    populateTaskForm();
+  } catch(e) { console.error(e); }
+}
+
+// ─── NAVIGATION ───
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'reports') renderReports();
+}
+
+// ─── HELPERS ───
+const statusLabel = { to_do:'To do', in_progress:'In progress', done:'Done', review:'Review' };
+const statusClass = { to_do:'badge-todo', in_progress:'badge-in_progress', done:'badge-done', review:'badge-review' };
+const priorityClass = { high:'badge-high', medium:'badge-medium', low:'badge-low' };
+const avatarColors = ['#dbeafe:#1d4ed8','#dcfce7:#15803d','#fee2e2:#b91c1c','#fef3c7:#92400e','#ede9fe:#6d28d9','#fce7f3:#be185d'];
+const acMap = {};
+function avatar(name) {
+  if (!acMap[name]) { const c = avatarColors[Object.keys(acMap).length % avatarColors.length].split(':'); acMap[name] = c; }
+  return acMap[name];
+}
+function initials(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+function pctColor(p) { return p >= 80 ? '#16a34a' : p >= 50 ? '#d97706' : '#dc2626'; }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function makeChart(id, type, data, opts = {}) {
+  if (charts[id]) { charts[id].destroy(); }
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, { type, data, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, ...opts } });
+}
+
+// ─── DASHBOARD ───
+function renderDashboard() {
+  const done = tasks.filter(t => t.status === 'done').length;
+  const inprog = tasks.filter(t => t.status === 'in_progress').length;
+  const allKpis = kras.flatMap(k => k.kpis || []);
+  const avgKpi = allKpis.length ? Math.round(allKpis.reduce((a,p) => a + (p.current_value/p.target_value*100), 0) / allKpis.length) : 0;
+  const overdue = tasks.filter(t => t.status !== 'done' && t.due_date && new Date(t.due_date) < new Date());
+
+  document.getElementById('dashMetrics').innerHTML = [
+    ['Total tasks', tasks.length, ''],
+    ['In progress', inprog, 'color:#2563eb'],
+    ['Completed', done, 'color:#16a34a'],
+    ['Avg KPI score', avgKpi + '%', '']
+  ].map(([l,v,s]) => `<div class="metric-card"><div class="metric-label">${l}</div><div class="metric-value" style="${s}">${v}</div></div>`).join('');
+
+  document.getElementById('overdueAlert').innerHTML = overdue.length > 0
+    ? `<div class="alert alert-warning">⚠ ${overdue.length} overdue task${overdue.length > 1 ? 's' : ''} — ${overdue.slice(0,2).map(t=>t.title).join(', ')}${overdue.length > 2 ? '...' : ''}</div>`
+    : '';
+
+  const recent = tasks.slice(0, 5);
+  document.getElementById('dashRecentTasks').innerHTML = recent.length ? recent.map(t => `
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f9fafb">
+      <div style="width:30px;height:30px;border-radius:50%;background:${avatar(t.assigned_to)[0]};color:${avatar(t.assigned_to)[1]};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0">${initials(t.assigned_to)}</div>
+      <div style="flex:1;min-width:0"><div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div><div style="font-size:11px;color:var(--text2)">${t.assigned_to} · Due ${t.due_date ? t.due_date.slice(0,10) : '—'}</div></div>
+      <span class="badge ${statusClass[t.status]}">${statusLabel[t.status]}</span>
+    </div>`).join('') : '<div class="empty">No tasks yet</div>';
+
+  // Status chart
+  const counts = { to_do: 0, in_progress: 0, done: 0, review: 0 };
+  tasks.forEach(t => counts[t.status] = (counts[t.status] || 0) + 1);
+  makeChart('statusChart', 'doughnut', {
+    labels: ['To do','In progress','Done','Review'],
+    datasets: [{ data: Object.values(counts), backgroundColor: ['#e5e7eb','#3b82f6','#22c55e','#f59e0b'], borderWidth: 0 }]
+  }, { cutout: '60%', plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } } });
+
+  // KPI chart
+  makeChart('kpiChart', 'bar', {
+    labels: kras.map(k => k.name.length > 14 ? k.name.slice(0,14)+'…' : k.name),
+    datasets: [{ data: kras.map(k => { const kpis = k.kpis || []; return kpis.length ? Math.round(kpis.reduce((a,p) => a+(p.current_value/p.target_value*100),0)/kpis.length) : 0; }), backgroundColor: '#3b82f6', borderRadius: 5, barThickness: 28 }]
+  }, { scales: { y: { min:0, max:100, ticks: { callback: v => v+'%', font:{size:11} } }, x: { ticks: { font:{size:11} } } } });
+}
+
+// ─── TASKS ───
+function renderTasks() {
+  const filters = ['all','to_do','in_progress','review','done'];
+  document.getElementById('taskFilters').innerHTML = filters.map(f =>
+    `<button class="btn btn-sm ${taskFilter===f?'btn-primary':'btn-secondary'}" onclick="setTaskFilter('${f}')">${f==='all'?'All':statusLabel[f]}</button>`
+  ).join('');
+
+  const filtered = taskFilter === 'all' ? tasks : tasks.filter(t => t.status === taskFilter);
+  document.getElementById('taskTableBody').innerHTML = filtered.length ? filtered.map(t => `
+    <tr>
+      <td style="font-weight:500">${t.title}</td>
+      <td>${t.assigned_to}</td>
+      <td><span class="badge ${priorityClass[t.priority]}">${t.priority}</span></td>
+      <td>
+        <select onchange="updateTaskStatus(${t.id}, this.value)" style="font-size:12px;padding:3px 6px;border:1px solid var(--border);border-radius:5px;background:white">
+          ${Object.entries(statusLabel).map(([v,l]) => `<option value="${v}" ${t.status===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </td>
+      <td style="color:var(--text2)">${t.due_date ? t.due_date.slice(0,10) : '—'}</td>
+      <td style="color:var(--accent);font-size:12px">${t.kra_linked || '—'}</td>
+      <td>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-sm btn-secondary" onclick="openTaskModal(${t.id})">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteTask(${t.id})">Del</button>
+        </div>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="7" class="empty">No tasks found</td></tr>';
+}
+
+function setTaskFilter(f) { taskFilter = f; renderTasks(); }
+
+async function updateTaskStatus(id, status) {
+  try {
+    await api('PATCH', `/tasks/${id}/status`, { status });
+    const t = tasks.find(t => t.id === id);
+    if (t) t.status = status;
+    renderTasks();
+    renderDashboard();
+  } catch(e) { alert(e.message); }
+}
+
+async function deleteTask(id) {
+  if (!confirm('Delete this task?')) return;
+  try {
+    await api('DELETE', `/tasks/${id}`);
+    tasks = tasks.filter(t => t.id !== id);
+    renderTasks(); renderDashboard();
+  } catch(e) { alert(e.message); }
+}
+
+function populateTaskForm() {
+  const assignSel = document.getElementById('tAssignee');
+  assignSel.innerHTML = '<option value="">Select person</option>' + users.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+  const kraSel = document.getElementById('tKRA');
+  kraSel.innerHTML = '<option value="">No KRA</option>' + kras.map(k => `<option value="${k.name}">${k.name}</option>`).join('');
+}
+
+function openTaskModal(id) {
+  editTaskId = id || null;
+  document.getElementById('taskModalTitle').textContent = id ? 'Edit task' : 'Add task';
+  document.getElementById('saveTaskBtn').textContent = id ? 'Save changes' : 'Add task';
+  document.getElementById('taskModalError').classList.add('hidden');
+  populateTaskForm();
+  if (id) {
+    const t = tasks.find(t => t.id === id);
+    document.getElementById('tTitle').value = t.title;
+    document.getElementById('tAssignee').value = t.assigned_to;
+    document.getElementById('tDue').value = t.due_date ? t.due_date.slice(0,10) : '';
+    document.getElementById('tStatus').value = t.status;
+    document.getElementById('tPriority').value = t.priority;
+    document.getElementById('tKRA').value = t.kra_linked || '';
+    document.getElementById('tDesc').value = t.description || '';
+  } else {
+    ['tTitle','tDue','tDesc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('tAssignee').value = '';
+    document.getElementById('tStatus').value = 'to_do';
+    document.getElementById('tPriority').value = 'medium';
+    document.getElementById('tKRA').value = '';
+  }
+  document.getElementById('taskModal').classList.remove('hidden');
+}
+
+async function saveTask() {
+  const body = {
+    title: document.getElementById('tTitle').value.trim(),
+    assigned_to: document.getElementById('tAssignee').value,
+    due_date: document.getElementById('tDue').value,
+    status: document.getElementById('tStatus').value,
+    priority: document.getElementById('tPriority').value,
+    kra_linked: document.getElementById('tKRA').value,
+    description: document.getElementById('tDesc').value
+  };
+  const errEl = document.getElementById('taskModalError');
+  errEl.classList.add('hidden');
+  if (!body.title || !body.assigned_to || !body.due_date) { errEl.textContent = 'Title, assignee and due date are required'; errEl.classList.remove('hidden'); return; }
+  const btn = document.getElementById('saveTaskBtn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  try {
+    if (editTaskId) {
+      const t = await api('PUT', `/tasks/${editTaskId}`, body);
+      tasks = tasks.map(x => x.id === editTaskId ? t : x);
+    } else {
+      const t = await api('POST', '/tasks', body);
+      tasks.unshift(t);
+    }
+    closeModal('taskModal');
+    renderTasks(); renderDashboard();
+  } catch(e) { errEl.textContent = e.message; errEl.classList.remove('hidden'); }
+  finally { btn.textContent = editTaskId ? 'Save changes' : 'Add task'; btn.disabled = false; }
+}
+
+// ─── KRAs ───
+function renderKRAs() {
+  const el = document.getElementById('kraList');
+  if (!kras.length) { el.innerHTML = '<div class="card"><div class="empty">No KRAs yet. Click "+ Add KRA" to start.</div></div>'; return; }
+  el.innerHTML = kras.map(k => {
+    const kpis = k.kpis || [];
+    const avg = kpis.length ? Math.round(kpis.reduce((a,p) => a+(p.current_value/p.target_value*100),0)/kpis.length) : 0;
+    const pc = pctColor(avg);
+    return `<div class="kra-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+        <div><div style="font-weight:600;font-size:16px">${k.name}</div><div style="font-size:13px;color:var(--text2);margin-top:2px">Owner: ${k.owner}</div></div>
+        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div style="font-size:22px;font-weight:700;color:${pc}">${avg}%</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-secondary" onclick="openKPIModal(${k.id})">+ KPI</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteKRA(${k.id})">Delete</button>
+          </div>
+        </div>
+      </div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${avg}%;background:${pc}"></div></div>
+      ${kpis.length === 0 ? '<div style="font-size:13px;color:#9ca3af;margin-top:10px">No KPIs yet. Click "+ KPI" to add one.</div>' : ''}
+      ${kpis.map(p => {
+        const pct = Math.min(100, Math.round(p.current_value / p.target_value * 100));
+        const c = pctColor(pct);
+        return `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #f3f4f6">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:500">${p.name}</span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:12px;color:var(--text2)">
+                <input type="number" value="${p.current_value}" onblur="updateKPI(${p.id}, this.value)" style="width:60px;border:1px solid var(--border);border-radius:5px;padding:2px 6px;font-size:12px;text-align:right"> / ${p.target_value}
+              </span>
+              <span style="font-size:12px;font-weight:700;color:${c}">${pct}%</span>
+              <button class="btn btn-sm btn-danger" style="padding:2px 7px;font-size:11px" onclick="deleteKPI(${p.id})">×</button>
+            </div>
+          </div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%;background:${c}"></div></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function openKRAModal() {
+  document.getElementById('kraName').value = '';
+  document.getElementById('kraOwner').value = '';
+  document.getElementById('kraModalError').classList.add('hidden');
+  document.getElementById('kraModal').classList.remove('hidden');
+}
+
+async function saveKRA() {
+  const name = document.getElementById('kraName').value.trim();
+  const owner = document.getElementById('kraOwner').value.trim();
+  const errEl = document.getElementById('kraModalError');
+  if (!name || !owner) { errEl.textContent = 'Name and owner required'; errEl.classList.remove('hidden'); return; }
+  try {
+    const k = await api('POST', '/kras', { name, owner });
+    kras.unshift(k);
+    closeModal('kraModal');
+    renderKRAs(); renderDashboard();
+  } catch(e) { errEl.textContent = e.message; errEl.classList.remove('hidden'); }
+}
+
+async function deleteKRA(id) {
+  if (!confirm('Delete this KRA and all its KPIs?')) return;
+  try {
+    await api('DELETE', `/kras/${id}`);
+    kras = kras.filter(k => k.id !== id);
+    renderKRAs(); renderDashboard();
+  } catch(e) { alert(e.message); }
+}
+
+function openKPIModal(kraId) {
+  activeKRAId = kraId;
+  document.getElementById('kpiName').value = '';
+  document.getElementById('kpiTarget').value = '';
+  document.getElementById('kpiCurrent').value = '';
+  document.getElementById('kpiModalError').classList.add('hidden');
+  document.getElementById('kpiModal').classList.remove('hidden');
+}
+
+async function saveKPI() {
+  const name = document.getElementById('kpiName').value.trim();
+  const target_value = parseFloat(document.getElementById('kpiTarget').value) || 100;
+  const current_value = parseFloat(document.getElementById('kpiCurrent').value) || 0;
+  const errEl = document.getElementById('kpiModalError');
+  if (!name) { errEl.textContent = 'KPI name required'; errEl.classList.remove('hidden'); return; }
+  try {
+    const p = await api('POST', `/kras/${activeKRAId}/kpis`, { name, target_value, current_value });
+    const k = kras.find(k => k.id === activeKRAId);
+    if (k) { k.kpis = k.kpis || []; k.kpis.push(p); }
+    closeModal('kpiModal');
+    renderKRAs(); renderDashboard();
+  } catch(e) { errEl.textContent = e.message; errEl.classList.remove('hidden'); }
+}
+
+async function updateKPI(id, val) {
+  try {
+    await api('PATCH', `/kras/kpis/${id}`, { current_value: parseFloat(val) });
+    kras = await api('GET', '/kras');
+    renderKRAs(); renderDashboard();
+  } catch(e) { alert(e.message); }
+}
+
+async function deleteKPI(id) {
+  try {
+    await api('DELETE', `/kras/kpis/${id}`);
+    kras.forEach(k => { k.kpis = (k.kpis||[]).filter(p => p.id !== id); });
+    renderKRAs(); renderDashboard();
+  } catch(e) { alert(e.message); }
+}
+
+// ─── REPORTS ───
+function renderReports() {
+  const done = tasks.filter(t => t.status === 'done').length;
+  const overdue = tasks.filter(t => t.status !== 'done' && t.due_date && new Date(t.due_date) < new Date());
+  const allKpis = kras.flatMap(k => k.kpis || []);
+  const onTrack = allKpis.filter(p => p.current_value/p.target_value >= 0.8).length;
+
+  document.getElementById('reportMetrics').innerHTML = [
+    ['Completion rate', tasks.length ? Math.round(done/tasks.length*100)+'%' : '0%', 'color:#16a34a'],
+    ['High priority done', tasks.filter(t=>t.status==='done'&&t.priority==='high').length, ''],
+    ['KRAs tracked', kras.length, ''],
+    ['KPIs on track', allKpis.length ? Math.round(onTrack/allKpis.length*100)+'%' : '0%', 'color:#16a34a'],
+    ['Overdue tasks', overdue.length, overdue.length > 0 ? 'color:#dc2626' : 'color:#16a34a']
+  ].map(([l,v,s]) => `<div class="metric-card"><div class="metric-label">${l}</div><div class="metric-value" style="${s}">${v}</div></div>`).join('');
+
+  // Assignee chart
+  const assigneeMap = {};
+  tasks.forEach(t => { if (!assigneeMap[t.assigned_to]) assigneeMap[t.assigned_to] = {done:0,total:0}; assigneeMap[t.assigned_to].total++; if(t.status==='done') assigneeMap[t.assigned_to].done++; });
+  makeChart('assigneeChart', 'bar', {
+    labels: Object.keys(assigneeMap),
+    datasets: [
+      { label:'Done', data: Object.values(assigneeMap).map(a=>a.done), backgroundColor:'#22c55e', borderRadius:4, barThickness:16 },
+      { label:'Total', data: Object.values(assigneeMap).map(a=>a.total), backgroundColor:'#93c5fd', borderRadius:4, barThickness:16 }
+    ]
+  }, { plugins: { legend: { display: true, position:'bottom', labels:{boxWidth:12,font:{size:11}} } }, scales: { x:{ticks:{font:{size:11}}}, y:{ticks:{stepSize:1,font:{size:11}}} } });
+
+  // KPI vs target chart
+  makeChart('kpiVsChart', 'bar', {
+    labels: allKpis.map(p => p.name.length > 16 ? p.name.slice(0,16)+'…' : p.name),
+    datasets: [
+      { label:'Current', data: allKpis.map(p=>p.current_value), backgroundColor:'#3b82f6', borderRadius:4, barThickness:14 },
+      { label:'Target', data: allKpis.map(p=>p.target_value), backgroundColor:'#e5e7eb', borderRadius:4, barThickness:14 }
+    ]
+  }, { plugins: { legend: { display: true, position:'bottom', labels:{boxWidth:12,font:{size:11}} } }, scales: { x:{ticks:{font:{size:11}}}, y:{ticks:{font:{size:11}}} } });
+
+  document.getElementById('overdueReport').innerHTML = overdue.length > 0
+    ? `<div class="card" style="border-left:4px solid var(--danger)">
+        <div class="card-title" style="color:var(--danger)">Overdue tasks</div>
+        <div class="table-wrap"><table><thead><tr><th>Task</th><th>Assignee</th><th>Due date</th><th>Priority</th></tr></thead>
+        <tbody>${overdue.map(t=>`<tr><td style="font-weight:500">${t.title}</td><td>${t.assigned_to}</td><td style="color:var(--danger)">${t.due_date?.slice(0,10)}</td><td><span class="badge ${priorityClass[t.priority]}">${t.priority}</span></td></tr>`).join('')}</tbody></table></div>
+      </div>` : '';
+
+  document.getElementById('reportTableBody').innerHTML = tasks.length ? tasks.map(t =>
+    `<tr><td style="font-weight:500">${t.title}</td><td>${t.assigned_to}</td>
+    <td><span class="badge ${statusClass[t.status]}">${statusLabel[t.status]}</span></td>
+    <td><span class="badge ${priorityClass[t.priority]}">${t.priority}</span></td>
+    <td style="color:var(--text2)">${t.due_date?.slice(0,10)||'—'}</td>
+    <td style="color:var(--accent);font-size:12px">${t.kra_linked||'—'}</td></tr>`
+  ).join('') : '<tr><td colspan="6" class="empty">No tasks yet</td></tr>';
+}
+
+// ─── USERS ───
+function renderUsers() {
+  document.getElementById('userTableBody').innerHTML = users.length ? users.map(u => `
+    <tr>
+      <td style="font-weight:500">${u.name} ${u.id===currentUser.id?'<span style="font-size:11px;color:var(--text2)">(you)</span>':''}</td>
+      <td style="font-size:12px">${u.email}</td>
+      <td style="color:var(--text2)">${u.phone||'—'}</td>
+      <td><span class="badge badge-${u.role}">${u.role}</span></td>
+      <td><span class="badge ${u.is_active?'badge-done':'badge-todo'}">${u.is_active?'Active':'Disabled'}</span></td>
+      <td>${u.must_change_password?'<span style="font-size:12px;color:var(--warning)">⚠ Pending</span>':'<span style="font-size:12px;color:var(--accent2)">✓ Set</span>'}</td>
+      <td>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-secondary" onclick="openUserModal(${u.id})">Edit</button>
+          ${currentUser.role==='admin'&&u.id!==currentUser.id?`
+          <button class="btn btn-sm btn-secondary" onclick="openResetModal(${u.id}, '${u.name}')">Reset pwd</button>
+          <button class="btn btn-sm ${u.is_active?'btn-danger':'btn-secondary'}" onclick="toggleUser(${u.id})">${u.is_active?'Disable':'Enable'}</button>
+          `:''}
+        </div>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="7" class="empty">No team members yet</td></tr>';
+}
+
+function openUserModal(id) {
+  editUserId = id || null;
+  document.getElementById('userModalTitle').textContent = id ? 'Edit member' : 'Add member';
+  document.getElementById('saveUserBtn').textContent = id ? 'Save changes' : 'Add member';
+  document.getElementById('userModalError').classList.add('hidden');
+  document.getElementById('uPassGroup').style.display = id ? 'none' : 'block';
+  if (id) {
+    const u = users.find(u => u.id === id);
+    document.getElementById('uName').value = u.name;
+    document.getElementById('uEmail').value = u.email;
+    document.getElementById('uPhone').value = u.phone || '';
+    document.getElementById('uRole').value = u.role;
+  } else {
+    ['uName','uEmail','uPhone','uPass'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('uRole').value = 'staff';
+  }
+  document.getElementById('userModal').classList.remove('hidden');
+}
+
+async function saveUser() {
+  const body = { name: document.getElementById('uName').value.trim(), email: document.getElementById('uEmail').value.trim(), phone: document.getElementById('uPhone').value.trim(), role: document.getElementById('uRole').value };
+  const errEl = document.getElementById('userModalError');
+  errEl.classList.add('hidden');
+  if (!body.name || !body.email) { errEl.textContent = 'Name and email required'; errEl.classList.remove('hidden'); return; }
+  const btn = document.getElementById('saveUserBtn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  try {
+    if (editUserId) {
+      const existing = users.find(u => u.id === editUserId);
+      const u = await api('PUT', `/auth/users/${editUserId}`, { ...body, is_active: existing.is_active });
+      users = users.map(x => x.id === editUserId ? { ...x, ...u } : x);
+    } else {
+      const pass = document.getElementById('uPass').value;
+      if (!pass) { errEl.textContent = 'Password required'; errEl.classList.remove('hidden'); btn.textContent = 'Add member'; btn.disabled = false; return; }
+      const u = await api('POST', '/auth/users', { ...body, password: pass });
+      users.push(u);
+    }
+    closeModal('userModal');
+    renderUsers();
+  } catch(e) { errEl.textContent = e.message; errEl.classList.remove('hidden'); }
+  finally { btn.textContent = editUserId ? 'Save changes' : 'Add member'; btn.disabled = false; }
+}
+
+async function toggleUser(id) {
+  try {
+    const u = await api('PATCH', `/auth/users/${id}/toggle`);
+    users = users.map(x => x.id === id ? { ...x, is_active: u.is_active } : x);
+    renderUsers();
+  } catch(e) { alert(e.message); }
+}
+
+function openResetModal(id, name) {
+  resetUserId = id;
+  document.getElementById('resetModalTitle').textContent = `Reset password — ${name}`;
+  document.getElementById('resetPass').value = '';
+  document.getElementById('resetError').classList.add('hidden');
+  document.getElementById('resetSuccess').classList.add('hidden');
+  document.getElementById('resetBtn').classList.remove('hidden');
+  document.getElementById('resetModal').classList.remove('hidden');
+}
+
+async function doResetPassword() {
+  const pass = document.getElementById('resetPass').value;
+  const errEl = document.getElementById('resetError');
+  errEl.classList.add('hidden');
+  if (pass.length < 6) { errEl.textContent = 'Min. 6 characters'; errEl.classList.remove('hidden'); return; }
+  try {
+    await api('POST', `/auth/users/${resetUserId}/reset-password`, { new_password: pass });
+    document.getElementById('resetSuccess').textContent = 'Password reset successfully!';
+    document.getElementById('resetSuccess').classList.remove('hidden');
+    document.getElementById('resetBtn').classList.add('hidden');
+    users = users.map(u => u.id === resetUserId ? { ...u, must_change_password: true } : u);
+    renderUsers();
+  } catch(e) { errEl.textContent = e.message; errEl.classList.remove('hidden'); }
+}
+
+// ─── PROFILE ───
+function renderProfile() {
+  if (!currentUser) return;
+  document.getElementById('profileDetails').innerHTML = [
+    ['Full name', currentUser.name],
+    ['Email', currentUser.email],
+    ['Mobile', currentUser.phone || '—'],
+    ['Role', `<span class="badge badge-${currentUser.role}">${currentUser.role}</span>`]
+  ].map(([l,v]) => `<div><div style="font-size:12px;color:var(--text2);margin-bottom:2px">${l}</div><div>${v}</div></div>`).join('');
+}
+
+async function changePassword() {
+  const old_password = document.getElementById('cpOld').value;
+  const p1 = document.getElementById('cpNew1').value;
+  const p2 = document.getElementById('cpNew2').value;
+  const errEl = document.getElementById('cpError');
+  const sucEl = document.getElementById('cpSuccess');
+  errEl.classList.add('hidden'); sucEl.classList.add('hidden');
+  if (!old_password) { errEl.textContent = 'Enter current password'; errEl.classList.remove('hidden'); return; }
+  if (p1.length < 6) { errEl.textContent = 'Min. 6 characters'; errEl.classList.remove('hidden'); return; }
+  if (p1 !== p2) { errEl.textContent = 'Passwords do not match'; errEl.classList.remove('hidden'); return; }
+  try {
+    await api('POST', '/auth/change-password', { old_password, new_password: p1 });
+    sucEl.textContent = 'Password changed successfully!'; sucEl.classList.remove('hidden');
+    ['cpOld','cpNew1','cpNew2'].forEach(i => document.getElementById(i).value = '');
+  } catch(e) { errEl.textContent = e.message; errEl.classList.remove('hidden'); }
+}
+
+// ─── INIT ───
+if (token && currentUser) {
+  initApp();
+} else {
+  document.getElementById('loginPage').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
